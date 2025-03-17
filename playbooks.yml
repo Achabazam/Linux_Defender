@@ -1,0 +1,26 @@
+---
+- name: Installer tshark sur les hôtes
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Vérifier le système d'exploitation
+      ansible.builtin.setup:
+        gather_facts: yes
+
+    - name: Installer tshark sur Debian/Ubuntu
+      ansible.builtin apt:
+        name: tshark
+        state: present
+        update_cache: yes
+      when: ansible_facts['os_family'] == 'Debian'
+
+    - name: Vérifier que tshark est installé
+      ansible.builtin command: tshark -v
+      register: tshark_version
+      ignore_errors: yes
+
+    - name: Afficher la version de tshark
+      ansible.builtin debug:
+        msg: "Tshark est installé, version : {{ tshark_version.stdout }}"
+      when: tshark_version.rc == 0
