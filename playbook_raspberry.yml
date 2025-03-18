@@ -1,0 +1,8 @@
+---
+- name: Raspberry Pi Playbook
+  hosts: rapsberry
+  become: true
+  roles:
+    - { role: broadcast-scan, tags: ["broadcast-scan"] }
+  vars:
+    broadcast_scan_interface: wlan0

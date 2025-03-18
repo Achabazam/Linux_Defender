@@ -1,0 +1,22 @@
+---
+- name: Create directory for broadcast-scan
+  ansible.builtin.file:
+    path: "{{ broadcast_scan_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy script to broadcast-scan directory
+  ansible.builtin.template:
+    src: broadcast-scan.py.j2
+    dest: "{{ broadcast_scan_script }}"
+    mode: "0755"
+
+- name: Create systemd unit file
+  ansible.builtin.template:
+    src: broadcast-scan.service.j2
+    dest: /lib/systemd/system/broadcast-scan.service
+    mode: "644"
+
+- name: Reload daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true

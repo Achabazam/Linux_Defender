@@ -1,0 +1,37 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_LOG_LEVEL=error
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./configs/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - monitoring
+    ports:
+      - 3000:3000
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+    volumes:
+      - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring
+    ports:
+      - 9090:9090
+
+volumes:
+  grafana_data:
+    driver: local
+
+networks:
+  monitoring:

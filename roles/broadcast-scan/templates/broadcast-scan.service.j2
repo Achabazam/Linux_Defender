@@ -1,0 +1,22 @@
+[Unit]
+Description=Broadcast Scan Service
+After=network.target
+
+[Service]
+# Par défaut, un service lancé par systemd tourne sous l'utilisateur root.
+# Pour explicitement le préciser:
+User=root
+Group=root
+
+# Remplacez /usr/bin/python par le chemin vers l'interpréteur Python souhaité
+# et /chemin/vers/script.py par le chemin de votre script Python.
+ExecStart=/usr/bin/python3 {{ broadcast_scan_script }}
+
+# Options facultatives, mais souvent utiles :
+Restart=on-failure       # Relancer le service si le script échoue
+RestartSec=5             # Attendre 5 secondes avant de relancer
+StandardOutput=journal   # Rediriger la sortie standard dans le journal systemd
+StandardError=journal    # Rediriger la sortie d'erreur dans le journal systemd
+
+[Install]
+WantedBy=multi-user.target

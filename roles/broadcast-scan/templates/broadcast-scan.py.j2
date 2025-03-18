@@ -1,0 +1,39 @@
+import time
+import threading
+from scapy.all import sniff
+from scapy.layers.l2 import Ether
+
+from prometheus_client import start_http_server, Counter
+
+# Crée un compteur Prometheus pour les paquets broadcast
+BROADCAST_PACKETS = Counter('broadcast_packets_total', 'Nombre total de paquets broadcast détectés')
+
+def packet_handler(packet):
+    """
+    Callback appelé pour chaque paquet capturé.
+    """
+    # Vérifie si l'adresse de destination MAC est ff:ff:ff:ff:ff:ff (Broadcast)
+    if packet.haslayer(Ether):
+        dst_mac = packet[Ether].dst
+        if dst_mac.lower() == "ff:ff:ff:ff:ff:ff":
+            BROADCAST_PACKETS.inc()
+
+def run_sniffer():
+    """
+    Lance la capture Scapy sur l'interface 'any' (ou 'eth0', 'wlan0', etc. selon votre config).
+    """
+    sniff(iface="{{ broadcast_scan_interface }}", prn=packet_handler, store=False)
+
+if __name__ == "__main__":
+    # Démarre le serveur HTTP qui expose /metrics
+    # Par défaut, sur le port 8000
+    start_http_server({{ broadcast_scan_prometheus_port }})
+
+    # Lance le sniffer Scapy dans un thread séparé
+    t = threading.Thread(target=run_sniffer)
+    t.daemon = True
+    t.start()
+
+    # Boucle infinie (on fait juste "tourner" le programme)
+    while True:
+        time.sleep(1)
