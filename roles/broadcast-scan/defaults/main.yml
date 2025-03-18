@@ -1,0 +1,14 @@
+---
+broadcast_scan_dir: /opt/broadcast-scan
+broadcast_scan_filename: broadcast_scan.py
+
+broadcast_scan_script: "{{ broadcast_scan_dir }}/{{ broadcast_scan_filename }}"
+
+broadcast_scan_python_packages:
+  - python3
+  - python3-pip
+  - python3-scapy
+  - python3-prometheus-client
+
+broadcast_scan_prometheus_port: 8000
+broadcast_scan_interface: eth1  # Change this to the interface you want to scan

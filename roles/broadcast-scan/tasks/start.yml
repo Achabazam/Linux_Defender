@@ -1,0 +1,6 @@
+---
+- name: Enable and Start service
+  ansible.builtin.service:
+    name: broadcast-scan.service
+    state: started
+    enabled: true
